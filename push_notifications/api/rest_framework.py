@@ -15,6 +15,7 @@ HEX64_RE = re.compile("[0-9a-f]{64}", re.IGNORECASE)
 class APNSDeviceSerializer(ModelSerializer):
     class Meta:
         model = APNSDevice
+        exclude = ('user')
 
     def validate_registration_id(self, value):
         # iOS device tokens are 256-bit hexadecimal (64 characters)
@@ -27,6 +28,7 @@ class APNSDeviceSerializer(ModelSerializer):
 class GCMDeviceSerializer(ModelSerializer):
     class Meta:
         model = GCMDevice
+        exclude = ('user')
 
 
 # Permissions
