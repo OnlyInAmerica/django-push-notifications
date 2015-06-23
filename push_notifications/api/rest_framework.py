@@ -20,6 +20,9 @@ class HexIntegerField(IntegerField):
         data = int(data, 16)
         return super(HexIntegerField, self).to_internal_value(data)
 
+    def to_representation(self, value):
+        return value
+
 # Serializers
 class DeviceSerializerMixin(ModelSerializer):
     class Meta:
