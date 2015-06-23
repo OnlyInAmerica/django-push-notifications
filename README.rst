@@ -159,7 +159,6 @@ Subclassing the authenticated resources in order to add a ``SameUserAuthenticati
 
 When registered, the APIs will show up at ``<api_root>/device/apns`` and ``<api_root>/device/gcm``, respectively.
 
-
 Django REST Framework (DRF) support
 -----------------------------------
 
@@ -184,11 +183,12 @@ Routes can be added one of two ways:
 
 ::
 
-	from push_notifications.api.rest_framework import APNSDeviceViewSet
+	from push_notifications.api.rest_framework import APNSDeviceAuthorizedViewSet, GCMDeviceAuthorizedViewSet
 	from rest_framework.routers import DefaultRouter
 
 	router = DefaultRouter()
-	router.register(r'device/apns', APNSDeviceViewSet)
+	router.register(r'device/apns', APNSDeviceAuthorizedViewSet)
+	router.register(r'device/gcm', GCMDeviceAuthorizedViewSet)
 
 	urlpatterns = patterns('',
 		# URLs will show up at <api_root>/device/apns

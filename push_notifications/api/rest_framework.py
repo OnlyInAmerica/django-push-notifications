@@ -12,10 +12,16 @@ HEX64_RE = re.compile("[0-9a-f]{64}", re.IGNORECASE)
 
 
 # Serializers
-class APNSDeviceSerializer(ModelSerializer):
+class DeviceSerializerMixin(ModelSerializer):
     class Meta:
+        fields = ("name", "registration_id", "device_id", "active", "date_created")
+        read_only_fields = ("date_created", )
+
+
+class APNSDeviceSerializer(ModelSerializer):
+
+    class Meta(DeviceSerializerMixin.Meta):
         model = APNSDevice
-        exclude = ('user',)
 
     def validate_registration_id(self, value):
         # iOS device tokens are 256-bit hexadecimal (64 characters)
@@ -26,9 +32,8 @@ class APNSDeviceSerializer(ModelSerializer):
 
 
 class GCMDeviceSerializer(ModelSerializer):
-    class Meta:
+    class Meta(DeviceSerializerMixin.Meta):
         model = GCMDevice
-        exclude = ('user',)
 
 
 # Permissions
@@ -39,7 +44,9 @@ class IsOwner(permissions.BasePermission):
 
 
 # Mixins
-class DeviceMixin(object):
+class DeviceViewSetMixin(object):
+    lookup_field = 'registration_id'
+
     def perform_create(self, serializer):
         if self.request.user.is_authenticated():
             serializer.save(user=self.request.user)
@@ -54,7 +61,7 @@ class AuthorizedMixin(object):
 
 
 # ViewSets
-class APNSDeviceViewSet(DeviceMixin, ModelViewSet):
+class APNSDeviceViewSet(DeviceViewSetMixin, ModelViewSet):
     queryset = APNSDevice.objects.all()
     serializer_class = APNSDeviceSerializer
 
@@ -63,7 +70,7 @@ class APNSDeviceAuthorizedViewSet(AuthorizedMixin, APNSDeviceViewSet):
     pass
 
 
-class GCMDeviceViewSet(DeviceMixin, ModelViewSet):
+class GCMDeviceViewSet(DeviceViewSetMixin, ModelViewSet):
     queryset = GCMDevice.objects.all()
     serializer_class = GCMDeviceSerializer
 
