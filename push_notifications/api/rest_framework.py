@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import re
 
 from rest_framework import permissions
+from rest_framework.fields import IntegerField
 from rest_framework.serializers import ModelSerializer, ValidationError
 from rest_framework.viewsets import ModelViewSet
 
@@ -10,6 +11,14 @@ from push_notifications.models import APNSDevice, GCMDevice
 
 HEX64_RE = re.compile("[0-9a-f]{64}", re.IGNORECASE)
 
+# Fields
+class HexIntegerField(IntegerField):
+    '''
+    Store an integer represented as a hex string of form "0x01"
+    '''
+    def to_internal_value(self, data):
+        data = int(data, 16)
+        return super(HexIntegerField, self).to_internal_value(data)
 
 # Serializers
 class DeviceSerializerMixin(ModelSerializer):
@@ -32,6 +41,10 @@ class APNSDeviceSerializer(ModelSerializer):
 
 
 class GCMDeviceSerializer(ModelSerializer):
+
+    device_id = HexIntegerField(help_text="ANDROID_ID / TelephonyManager.getDeviceId() (e.g: 0x01)",
+                                style={'input_type': 'text'})
+
     class Meta(DeviceSerializerMixin.Meta):
         model = GCMDevice
 
