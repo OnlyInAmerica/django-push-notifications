@@ -48,7 +48,8 @@ class APNSDeviceSerializer(ModelSerializer):
 class GCMDeviceSerializer(ModelSerializer):
 	device_id = HexIntegerField(
 		help_text="ANDROID_ID / TelephonyManager.getDeviceId() (e.g: 0x01)",
-		style={'input_type': 'text'}
+		style={'input_type': 'text'},
+		required=False
 	)
 
 	class Meta(DeviceSerializerMixin.Meta):
